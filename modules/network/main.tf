@@ -12,7 +12,6 @@ resource "aws_subnet" "public_subnet" {
   cidr_block = local.public_subnet_cidr[terraform.workspace]
   map_public_ip_on_launch = true
   availability_zone = "us-east-1a"
-#  availability_zone = local.availability_zones[terraform.workspace][0]
   tags = {
     Name = "${terraform.workspace}-public-subnet"
   }
@@ -24,7 +23,6 @@ resource "aws_subnet" "private_subnet" {
   cidr_block = local.private_subnet_cidr[terraform.workspace]
   map_public_ip_on_launch = false
   availability_zone = "us-east-1b"
-#  availability_zone       = local.availability_zones[terraform.workspace][1]
   tags = {
     Name = "${terraform.workspace}-private-subnet"
   }
@@ -75,7 +73,6 @@ resource "aws_network_interface" "public" {
   }
   depends_on = [aws_subnet.public_subnet] 
 }
-
 
 // Create Internet Gateway for VPC
 resource "aws_internet_gateway" "internet_gate_way" {

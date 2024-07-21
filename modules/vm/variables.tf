@@ -41,24 +41,12 @@ variable "ami_id_ubuntu" {
   description = "AMI ID for Ubuntu instances."
   type = string
 }
-# variable "public_subnet" {
-#   description = "The ID of the public subnet"
-#   type        = string
-# }
-
-# variable "subnet_id" {
-#   description = "The subnet ID"
-#   type        = string
-# }
 
 variable "network_interface_id" {
   description = "This defines the instance ID"
   type = string
 }
-# variable "aws_network_interface" {
-#   description = "The interface "
-#   type = string
-# }
+
 variable "aws_instance_id" {
   description = "This defines the Ubuntu Linux ID"
   type = string

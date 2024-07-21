@@ -19,12 +19,6 @@ resource "aws_instance" "build-server" {
   depends_on = [ local_file.linux-pem-key ]
 }
 
-# resource "aws_network_interface_attachment" "public" {
-#   instance_id           = aws_instance.build-server.id
-#   network_interface_id  = var.network_interface_id
-#   device_index          = 0
-# }
-
 resource "aws_key_pair" "key-pair" {
   key_name   = "${terraform.workspace}-keypair"
   public_key = tls_private_key.linux-keypair.public_key_openssh
