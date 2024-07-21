@@ -6,6 +6,7 @@ resource "aws_instance" "build-server" {
   vpc_security_group_ids = [var.security_group_id]
   subnet_id     = var.public_subnet_id
   
+  
   user_data   = file("${path.module}/app-scripts/install.sh")
   tags = {
     Name =  "${terraform.workspace}-build-server"

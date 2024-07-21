@@ -1,6 +1,7 @@
 // CREATE VPC
 resource "aws_vpc" "vpc" {
   cidr_block = local.cidr_blocks[terraform.workspace]
+  enable_dns_hostnames = true
   tags = {
     Name = "${terraform.workspace}-project-vpc"
   }
