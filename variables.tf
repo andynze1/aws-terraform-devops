@@ -51,7 +51,7 @@ variable "volume_size" {
 variable "network_interface_id" {
   description = "The ID of the network interface to attach to the instance"
   type        = string
-  default = "aws_network_interface.public.id"
+  default     = "aws_network_interface.public.id"
 }
 
 variable "aws_instance_id" {

@@ -1,21 +1,33 @@
 locals {
+  # CIDR blocks for VPCs by workspace
   cidr_blocks = {
-    stage = "10.0.0.0/16"
-    prod  = "10.1.0.0/16"
-    default = "10.2.0.0/16"  # Add this line if you are using the default workspace
+    stage   = "10.0.0.0/16"
+    prod    = "10.1.0.0/16"
+    default = "10.2.0.0/16"  # Added default workspace key
   }
+
+  # Public Subnet CIDR blocks by workspace
   public_subnet_cidr = {
-    stage = "10.0.1.0/24"
-    prod  = "10.1.1.0/24"
+    stage   = ["10.0.64.0/19", "10.0.96.0/19"]
+    prod    = ["10.1.64.0/19", "10.1.96.0/19"]
+    default = ["10.2.64.0/19", "10.2.96.0/19"]
   }
+
+  # Private Subnet CIDR blocks by workspace
   private_subnet_cidr = {
-    stage = "10.0.2.0/24"
-    prod  = "10.1.2.0/24"
+    stage   = ["10.0.0.0/19", "10.0.32.0/19"]
+    prod    = ["10.1.0.0/19", "10.1.32.0/19"]
+    default = ["10.2.0.0/19", "10.2.32.0/19"]
   }
+
+  # Availability zones by workspace
   availability_zones = {
-    stage = ["us-east-1a", "us-east-1b"]
-    prod  = ["us-east-1a", "us-east-1b"]
+    stage   = ["us-east-1a", "us-east-1b"]
+    prod    = ["us-east-1a", "us-east-1b"]
+    default = ["us-east-1a", "us-east-1b"]
   }
+
+  # Security group rules
   security_group_rules = [
     {
       name        = "SSH access"
@@ -32,25 +44,39 @@ locals {
       cidr_blocks = ["0.0.0.0/0"]
     },
     {
-      name        = "Application 8081 access"
+      name        = "HTTPS access"
+      from_port   = 9443
+      to_port     = 9443
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    },
+    {
+      name        = "App Port 8081"
       from_port   = 8081
       to_port     = 8081
       protocol    = "tcp"
       cidr_blocks = ["0.0.0.0/0"]
     },
     {
-      name        = "Application 8080 access"
+      name        = "App Port 8080"
       from_port   = 8080
       to_port     = 8080
       protocol    = "tcp"
       cidr_blocks = ["0.0.0.0/0"]
     },
     {
-      name        = "Application 9000 access"
+      name        = "App Port 9000"
       from_port   = 9000
       to_port     = 9000
       protocol    = "tcp"
       cidr_blocks = ["0.0.0.0/0"]
     }
   ]
+
+  # Subnet IDs for the public and private subnets
+  public_subnet_ids = aws_subnet.public_subnet.*.id
+  private_subnet_ids = aws_subnet.private_subnet.*.id
+
+  # Network interface IDs
+  public_network_interface_ids = aws_network_interface.public.*.id
 }
