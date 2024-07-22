@@ -38,7 +38,7 @@ module "eks" {
   version = "18.29.0"
 
   cluster_name    = "vtech-eks-cluster"
-  cluster_version = "1.28"
+  cluster_version = "1.29"
 
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
