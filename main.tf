@@ -37,7 +37,7 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "18.29.0"
 
-  cluster_name    = "vtech-eks"
+  cluster_name    = "vtech-eks-cluster"
   cluster_version = "1.28"
 
   cluster_endpoint_private_access = true
