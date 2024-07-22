@@ -65,3 +65,16 @@ variable "public_subnet_id" {
   type        = string
   default     = "aws_subnet.public_subnet.id"
 }
+
+variable "private_subnet_id" {
+  description = "This defines Public Subnet ID"
+  type        = string
+  default     = "aws_subnet.private_subnet.id"
+}
+
+variable "vpc_id" {
+  description = "This defines the VPC ID"
+  type = string
+  default = "aws_vpc.vpc.id"
+}
+

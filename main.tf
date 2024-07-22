@@ -1,60 +1,44 @@
+# Local Variables
 locals {
   env = terraform.workspace
 }
 
+# Network Module
 module "network" {
   source               = "./modules/network"
   aws_region           = var.aws_region
-  vpc_id               = var.vpc.id
+  vpc_id               = var.vpc_id
   my_ip_address        = var.my_ip_address
   aws_instance_id      = var.aws_instance_id
   public_subnet_id     = var.public_subnet_id
   network_interface_id = var.network_interface_id
 }
 
+# VM Module
 module "vm" {
-  source               = "./modules/vm"
-  instance_type        = "t2.large"
-  ami_id_ubuntu        = var.ami_id_ubuntu
-  
-  public_subnet_id     = module.network.public_subnet_ids[0]  # Use the first public subnet ID
-  private_subnet_id    = module.network.private_subnet_ids[0]  # Use the first private subnet ID
+  source        = "./modules/vm"
+  instance_type = "t2.large"
+  ami_id_ubuntu = var.ami_id_ubuntu
 
-  public_subnet_ids    = module.network.public_subnet_ids  # List of public subnet IDs
-  private_subnet_ids   = module.network.private_subnet_ids # List of private subnet IDs
+  public_subnet_id  = module.network.public_subnet_ids[0]  # Use the first public subnet ID
+  private_subnet_id = module.network.private_subnet_ids[0] # Use the first private subnet ID
+
+  public_subnet_ids  = module.network.public_subnet_ids  # List of public subnet IDs
+  private_subnet_ids = module.network.private_subnet_ids # List of private subnet IDs
 
   vpc_id               = module.network.vpc_id
   security_group_id    = module.network.security_group_id
   aws_instance_id      = var.aws_instance_id
-  network_interface_id = module.network.public_network_interface_ids[0]  # Use the first network interface ID
+  network_interface_id = module.network.public_network_interface_ids[0] # Use the first network interface ID
 }
 
-
-# module "vm" {
-#   #  aws_region           = var.aws_region
-#   source        = "./modules/vm"
-#   instance_type = "t2.large"
-#   #  public_key_path      = var.public_key_path
-#   #  volume_size          = var.volume_size
-#   ami_id_ubuntu        = var.ami_id_ubuntu
-#   private_subnet_ids   = module.network.private_subnet_ids
-#   public_subnet_ids    = module.network.public_subnet_ids
-#   public_subnet_id     = module.network.public_subnet_ids
-#   private_subnet_id    = module.network.private_subnet_ids
-#   vpc_id               = module.network.vpc_id
-#   security_group_id    = module.network.security_group_id
-#   aws_instance_id      = var.aws_instance_id
-#   network_interface_id = module.network.public_network_interface_ids[0] # Example if using the first network interface
-# }
-
-
+# EKS Module
 module "eks" {
-  source          = "terraform-aws-modules/eks/aws"
-  version         = "18.29.0"
-  subnet_ids      = module.network.public_subnet_ids
-  cluster_name    = "vtech-eks-eks"
+  source  = "terraform-aws-modules/eks/aws"
+  version = "18.29.0"
+
+  cluster_name    = "vtech-eks"
   cluster_version = "1.28"
-  vpc_id = module.network.vpc_id 
 
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
@@ -73,6 +57,9 @@ module "eks" {
       most_recent = true
     }
   }
+
+  vpc_id     = module.network.vpc_id
+  subnet_ids = module.network.private_subnet_ids
 
   enable_irsa = true
 
@@ -139,6 +126,7 @@ module "eks" {
   }
 }
 
+# EKS Cluster Data Source
 data "aws_eks_cluster" "default" {
   name = module.eks.cluster_id
 }
@@ -147,6 +135,7 @@ data "aws_eks_cluster_auth" "default" {
   name = module.eks.cluster_id
 }
 
+# Kubernetes Provider
 provider "kubernetes" {
   host                   = data.aws_eks_cluster.default.endpoint
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.default.certificate_authority[0].data)
@@ -157,4 +146,3 @@ provider "kubernetes" {
     command     = "aws"
   }
 }
-
